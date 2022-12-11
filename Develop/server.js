@@ -3,29 +3,51 @@ const path = require('path');
 const fs = require('fs');
 const util = require('util');
 
+// helper method for generating unique ids
 const uuid = require('./helper/helper');
 
 const PORT = 3001;
-// const jsonData = require('./Develop/db/db.json');
+
 
 const app = express();
 
+// middleware methods
 app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-
-
 // HTML routes
-// returns notes.html
+
+// returns route for home page
+app.get('/', (req, res) =>
+    res.sendFile(path.join(__dirname, 'public/index.html'))
+);
+
+// returns route for note page
 app.get('/notes', (req, res) =>
     res.sendFile(path.join(__dirname, 'public/notes.html'))
 );
 
-// returns index.html
-app.get('/', (req, res) =>
-    res.sendFile(path.join(__dirname, 'public/index.html'))
-);
+const readFromFile = util.promisify(fs.readFile);
+
+/**
+ *  Function to write data to the JSON file given a destination and some content
+ *  @param {string} destination The file you want to write to.
+ *  @param {object} content The content you want to write to the file.
+ *  @returns {void} Nothing
+ */
+const writeToFile = (destination, content) =>
+    fs.writeFile(destination, JSON.stringify(content,), (err) =>
+        err ? console.error(err) : console.info()
+    );
+
+/**
+ *  Function to read data from a given a file and append some content
+ *  @param {object} content The content you want to append to the file.
+ *  @param {string} file The path to the file you want to save to.
+ *  @returns {void} Nothing
+ */
+
 
 // API routes
 // reads db.json file and returns all saved notes as json
